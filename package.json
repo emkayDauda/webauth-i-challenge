@@ -4,7 +4,8 @@
   "description": "Node authentication",
   "main": "index.js",
   "scripts": {
-    "test": " "
+    "server": "node index.js",
+    "start": "nodemon index.js"
   },
   "repository": {
     "type": "git",
