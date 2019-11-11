@@ -11,6 +11,15 @@ users.get("/", restricted, (req, res) => {
   });
 });
 
+users.get("/:id", restricted, (req, res) => {
+    db.get(req.params.id).then(users => {
+      if(users) {
+        res.status(200).json(users);
+      }
+      else res.status(200).json({error: true, message: "User with that Id not found"})
+    });
+  });
+
 users.post("/register", validateUserBody, (req, res) => {
   db.createUser(req.valUserBody)
     .then(user => res.status(201).json(user))

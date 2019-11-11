@@ -9,7 +9,7 @@ function createUser(user) {
 function get(id) {
     let query = db('users as u')
 
-    if (id) query.where('u.userId', id)
+    if (id) query.where('u.userId', id).first()
 
     return query;
 }
