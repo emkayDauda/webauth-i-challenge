@@ -10,3 +10,5 @@ server.use(helmet())
 server.get('/', (req, res) => {
     res.send('Works')
 })
+
+module.exports = server
