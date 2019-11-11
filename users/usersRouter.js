@@ -5,7 +5,7 @@ const db = require("./usersModel");
 
 const users = express.Router();
 
-users.get("/", (req, res) => {
+users.get("/", restricted, (req, res) => {
   db.get().then(users => {
     res.status(200).json(users);
   });
@@ -22,7 +22,12 @@ users.post("/login", validateUserBody, restricted, (req, res) => {
 });
 
 function restricted(req, res, next) {
-    const { username, password } = req.body;
+    let { username, password } = req.body;
+
+    if (!username || !password) {
+        username = req.headers.username
+        password = req.headers.password
+    }
 
   db.findBy({ username })
     .first()
