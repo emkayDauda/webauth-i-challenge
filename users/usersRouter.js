@@ -11,7 +11,7 @@ users.get("/", (req, res) => {
   });
 });
 
-users.post("/", validateUserBody, (req, res) => {
+users.post("/register", validateUserBody, (req, res) => {
   db.createUser(req.valUserBody)
     .then(user => res.status(201).json(user))
     .catch(err => res.status(500).json({ error: true, message: err.message }));

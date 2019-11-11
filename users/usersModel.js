@@ -14,7 +14,12 @@ function get(id) {
     return query;
 }
 
+function findBy(filter) {
+    return db('users').where(filter)
+}
+
 module.exports = {
     get,
-    createUser
+    createUser,
+    findBy
 }
