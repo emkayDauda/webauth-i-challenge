@@ -17,24 +17,29 @@ users.post("/register", validateUserBody, (req, res) => {
     .catch(err => res.status(500).json({ error: true, message: err.message }));
 });
 
-users.post("/login", validateUserBody, (req, res) => {
-  const { username, password } = req.body;
+users.post("/login", validateUserBody, restricted, (req, res) => {
+    res.status(200).json(req.loggedInResponse);  
+});
+
+function restricted(req, res, next) {
+    const { username, password } = req.body;
 
   db.findBy({ username })
     .first()
     .then(user => {
       if (user && bcrypt.compareSync(password, user.password)) {
-        res.status(200).json({
-          error: false,
-          message: `Welcome, ${user.username}`,
-          data: user
-        });
+          req.loggedInResponse = {
+            error: false,
+            message: `Welcome, ${user.username}`,
+            data: user
+          }
+          next()
       } else {
         res.status(404).json({ error: true, message: `Invalid credentials` });
       }
     })
     .catch(err => res.status(404).json({ error: true, message: err.message }));
-});
+}
 
 function validateUserBody(req, res, next) {
   const { username, password } = req.body;
