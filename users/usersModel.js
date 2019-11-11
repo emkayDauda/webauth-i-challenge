@@ -1,8 +1,9 @@
 const db = require('../data/dbConfig')
 
 function createUser(user) {
-    db('users')
+    return db('users')
     .insert(user)
+    .then(([id]) => this.get(id))
 }
 
 function get(id) {

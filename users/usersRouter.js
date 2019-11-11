@@ -11,6 +11,12 @@ users.get("/", (req, res) => {
   });
 });
 
+users.post("/", validateUserBody, (req, res) => {
+  db.createUser(req.valUserBody)
+    .then(user => res.status(201).json(user))
+    .catch(err => res.status(500).json({ error: true, message: err.message }));
+});
+
 function validateUserBody(req, res, next) {
   const { username, password } = req.body;
 
@@ -19,9 +25,9 @@ function validateUserBody(req, res, next) {
   } else if (!username || !password) {
     res.status(404).json({ error: true, message: "Missing require param" });
   } else {
-    const hashedPassword = bcrypt.hashSync(password, 123);
-    req.valUserBody = { username, hashedPassword };
-    next()
+    const hashedPassword = bcrypt.hashSync(password, 11);
+    req.valUserBody = { username, password: hashedPassword };
+    next();
   }
 }
 
