@@ -8,6 +8,7 @@ function createUser(user) {
 
 function get(id) {
     let query = db('users as u')
+    .select('u.userId', 'u.username')
 
     if (id) query.where('u.userId', id).first()
 
