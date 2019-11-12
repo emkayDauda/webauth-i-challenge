@@ -11,6 +11,20 @@ users.get("/", restricted, (req, res) => {
   });
 });
 
+users.get('/logout', (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if (err) {
+        res.json('you can not leave, actually')
+      } else {
+        res.json('goodbye, sad to see you go')
+      }
+    })
+  } else {
+    res.end();
+  }
+})
+
 users.get("/:id", restricted, (req, res) => {
     db.get(req.params.id).then(users => {
       if(users) {
@@ -22,22 +36,15 @@ users.get("/:id", restricted, (req, res) => {
 
 users.post("/register", validateUserBody, (req, res) => {
   db.createUser(req.valUserBody)
-    .then(user => res.status(201).json(user))
+    .then(user => {
+      req.session.user = user;
+      res.status(201).json(user)
+    })
     .catch(err => res.status(500).json({ error: true, message: err.message }));
 });
 
-users.post("/login", validateUserBody, restricted, (req, res) => {
-    res.status(200).json(req.loggedInResponse);  
-});
-
-function restricted(req, res, next) {
-    let { username, password } = req.body;
-
-    if (!username || !password) {
-        username = req.headers.username
-        password = req.headers.password
-    }
-
+users.post("/login", validateUserBody, (req, res) => {
+  let { username, password } = req.body;
   db.findBy({ username })
     .first()
     .then(user => {
@@ -47,12 +54,21 @@ function restricted(req, res, next) {
             message: `Welcome, ${user.username}`,
             data: user
           }
-          next()
+          req.session.user = user;
+          res.status(200).json(req.loggedInResponse);  
       } else {
         res.status(404).json({ error: true, message: `Invalid credentials` });
       }
     })
     .catch(err => res.status(404).json({ error: true, message: err.message }));
+});
+
+function restricted(req, res, next) {
+  if (req.session && req.session.user) {
+    next();
+  } else {
+    res.status(401).json({ message: 'No credentials provided' });
+  }
 }
 
 function validateUserBody(req, res, next) {

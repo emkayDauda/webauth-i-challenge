@@ -23,8 +23,8 @@ const sessionConfig = {
     saveUninitialized: false,
   }
 
+  server.use(session(sessionConfig));
 server.use('/api/users', userRouter)
-server.use(session(sessionConfig));
 
 server.get('/', (req, res) => {
     res.send('Works')
